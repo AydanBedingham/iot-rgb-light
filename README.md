@@ -4,7 +4,7 @@ Used an Arduino Microcontroller and cloud-based MQTT broker service to create an
 
 
 
-Components:
+**Components:**
 
 - Arduino UNO R3
 
@@ -20,13 +20,22 @@ Components:
 
 - RJ45 Inline Joiner
 
-Commands:
+
+**Commands:**
+
 - setLightColorRed
+
 - setLightColorGreen
+
 - setLightColorBlue
+
 - setLightColorYellow
+
 - setLightColorOrange
+
 - setLightColorNone
 
-Bash Command Example:
+**
+Bash Command Example:**
+
 mosquitto_pub -r -h "m11.cloudmqtt.com" -p "12806" -u "LightPublisher" -P "<Password>" -t "Light1" -m "setLightColorRed"﻿
