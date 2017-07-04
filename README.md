@@ -3,13 +3,21 @@
 Used an Arduino Microcontroller and cloud-based MQTT broker service to create an Internet-of-Things Red-Green-Blue light that can be controlled over the internet.
 
 
+
 Components:
+
 - Arduino UNO R3
+
 - W5100 Arduino Ethernet Shield
+
 - RGB LED
+
 - Light Ceiling Fixture
+
 - Round Cylinder Plastic Saucer
+
 - Micro USB extension lead
+
 - RJ45 Inline Joiner
 
 Commands:
