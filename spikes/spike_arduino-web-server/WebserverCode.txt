@@ -1,0 +1,140 @@
+
+#include <SPI.h>
+#include <Ethernet.h>
+
+byte mac[] = {  
+  0x00, 0xAA, 0xBB, 0xCC, 0xDE, 0x02 };
+
+
+EthernetServer server(80);
+
+boolean ethernetOn;
+boolean serverOn;
+
+int buttonPin = 2;
+
+int buttonClickValue = 0;
+
+
+void setupWebServer(){
+  Serial.println("Application Started.");
+  
+  Serial.println("Connecting to network.");
+  
+  if (Ethernet.begin(mac)!=0) ethernetOn = true; else ethernetOn = false;
+  
+  if (ethernetOn == true){
+    Serial.println("Successfully Connected.");
+    
+    Serial.print("My IP address: ");
+    Serial.println(Ethernet.localIP());
+    
+    Serial.println("Starting Server");
+    serverOn = false;
+    //EthernetServer myServer(80); //Will throw exception if fails
+    //server = &myServer;
+    serverOn = true;
+    Serial.println("Server started successfully");
+    
+  } else {
+    Serial.println("Failed to configure Ethernet using DHCP"); 
+  }
+   
+}
+
+
+
+
+
+void setup() {
+
+  delay(5000);
+  
+  pinMode(buttonPin, INPUT);
+  
+  Serial.begin(9600);
+  
+  setupWebServer();
+  
+  
+}
+
+
+void webServerActivity(){
+  
+  if (ethernetOn&serverOn){
+  
+    //Serial.println("Waiting for client.");
+    EthernetClient client = server.available();
+       
+    if (client) {
+      Serial.println("new client");
+      
+      boolean currentLineIsBlank = true;
+      while(client.connected()) {
+        
+        
+        if (client.available()){ //Read from client
+          char c = client.read();
+          Serial.write(c); //Write client message to serial
+ 
+          if (c == '\n' && currentLineIsBlank) { //Client message fully received - Begin sending response
+            // send a standard http response header
+            client.println("HTTP/1.1 200 OK");
+            client.println("Content-Type: text/html");
+            client.println("Connection: close");  // the connection will be closed after completion of the response
+	    client.println("Refresh: 3");  // refresh the page automatically every 5 sec
+            client.println();
+            client.println("<!DOCTYPE HTML>");
+            client.println("<html>");
+            client.println("<b>I am Aydan's Arduino Web Server!</b><br/>");
+            
+            client.print("Button Value: ");
+            client.println(buttonClickValue);
+            
+            client.println("</html>");
+            
+            // give the web browser time to receive the data
+            delay(1);
+            // close the connection:
+            client.stop();
+            Serial.println("client disonnected");            
+          }
+          if (c == '\n') {
+            // you're starting a new line
+            currentLineIsBlank = true;
+          } 
+          else if (c != '\r') {
+            // you've gotten a character on the current line
+            currentLineIsBlank = false;
+          }
+        }
+      }
+      
+
+    
+    }
+
+  
+  }
+  
+}
+
+void buttonCheck(){
+  while (digitalRead(buttonPin)==HIGH){
+  
+    while (digitalRead(buttonPin)!=LOW){}
+  
+    Serial.println("Button value incremented");
+    buttonClickValue += 1;
+  }
+}
+
+
+
+void loop() {
+  
+  webServerActivity();
+  
+  buttonCheck();
+}
